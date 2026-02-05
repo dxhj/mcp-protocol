@@ -33,8 +33,6 @@ npm install
    GROQ_API_KEY=sua-chave-aqui
    ```
 
-   Obtenha sua chave gratuita em: https://console.groq.com
-
 ## Compilação
 
 Compile TypeScript para JavaScript:
