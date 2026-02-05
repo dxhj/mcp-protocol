@@ -29,8 +29,6 @@ client.connect(transport).then(async () => {
     },
   }));
   
-  // Groq - Free tier, very fast inference
-  // Sign up at https://console.groq.com to get API key
   const apiKey: string | undefined = process.env.GROQ_API_KEY;
   if (!apiKey) {
     console.error("Variável de ambiente GROQ_API_KEY é obrigatória");
@@ -42,11 +40,10 @@ client.connect(transport).then(async () => {
     apiKey: apiKey,
   });
   
-  // Example: Search for cars and get user by id
   const userMessage = "Encontre carros da marca Toyota com preço máximo de 150000 e também busque o usuário com id 2";
   
   const completion = await openai.chat.completions.create({
-    model: "Llama-3.3-70b-Versatile", // or "mixtral-8x7b-32768", "gemma-7b-it"
+    model: "Llama-3.3-70b-Versatile",
     messages: [{ role: "user", content: userMessage }],
     tools: openaiTools,
     temperature: 0.7,
