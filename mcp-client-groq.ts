@@ -15,9 +15,9 @@ const transport = new StdioClientTransport({
 });
 
 client.connect(transport).then(async () => {
-  console.log("Client connected successfully");
+  console.log("Cliente conectado com sucesso");
   const mcpTools = await client.listTools();
-  console.log("MCP Tools:", JSON.stringify(mcpTools, null, 2));
+  console.log("Ferramentas MCP:", JSON.stringify(mcpTools, null, 2));
   
   // Convert MCP tools to OpenAI format
   const openaiTools = mcpTools.tools.map((tool) => ({
@@ -33,9 +33,7 @@ client.connect(transport).then(async () => {
   // Sign up at https://console.groq.com to get API key
   const apiKey: string | undefined = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    console.error("GROQ_API_KEY environment variable is required");
-    console.error("Create a .env file with GROQ_API_KEY=your-key-here");
-    console.error("Get your free API key at: https://console.groq.com");
+    console.error("Variável de ambiente GROQ_API_KEY é obrigatória");
     process.exit(1);
   }
   
@@ -54,8 +52,8 @@ client.connect(transport).then(async () => {
     temperature: 0.7,
   });
 
-  console.log("User message:", userMessage);
-  console.log("Tool calls:", JSON.stringify(completion.choices[0].message.tool_calls, null, 2));
+  console.log("Mensagem do usuário:", userMessage);
+  console.log("Chamadas de ferramentas:", JSON.stringify(completion.choices[0].message.tool_calls, null, 2));
   
   const message = completion.choices[0].message;
   const toolCalls = message.tool_calls || [];
@@ -64,7 +62,7 @@ client.connect(transport).then(async () => {
   if (toolCalls.length > 0) {
     for (const toolCall of toolCalls) {
       if (toolCall.type === "function") {
-        console.log(`\nExecutando tool: ${toolCall.function.name}`);
+        console.log(`\nExecutando ferramenta: ${toolCall.function.name}`);
         console.log(`Argumentos: ${toolCall.function.arguments}`);
         
         const toolArguments = JSON.parse(toolCall.function.arguments || "{}") as Record<string, unknown>;
@@ -73,7 +71,7 @@ client.connect(transport).then(async () => {
           arguments: toolArguments,
         });
         
-        console.log(`\nResultado da tool ${toolCall.function.name}:`);
+        console.log(`\nResultado da ferramenta ${toolCall.function.name}:`);
         
         if (isMcpToolResult(result)) {
           try {
@@ -93,7 +91,7 @@ client.connect(transport).then(async () => {
   }
   process.exit(0);
 }).catch((err: unknown) => {
-  console.error("Failed to connect or list tools:", err);
+  console.error("Falha ao conectar ou listar ferramentas:", err);
   process.exit(1);
 });
 

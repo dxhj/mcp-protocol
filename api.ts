@@ -81,7 +81,7 @@ app.get("/cars", (req: Request, res: Response<CarsResponse | ErrorResponse>) => 
             });
         }
         
-        console.error("Error in /cars endpoint:", error);
+        console.error("Erro no endpoint /cars:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });

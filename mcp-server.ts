@@ -10,7 +10,7 @@ const server = new McpServer({
 
 server.tool(
   "getUserById",
-  "Busca usuário na API Express",
+  "Search for a user in the Express API",
   {
     id: z.number(),
   },
@@ -33,7 +33,7 @@ server.tool(
 
 server.tool(
   "searchCars",
-  "Pesquisa automóveis por marca, modelo, ano ou preço máximo",
+  "Search for cars by brand, model, year or maximum price",
   {
     brand: z.string().optional(),
     model: z.string().optional(),
@@ -92,6 +92,6 @@ server.tool(
 
 const transport = new StdioServerTransport();
 server.connect(transport).catch((err: unknown) => {
-  console.error("Server connection error:", err);
+  console.error("Erro de conexão do servidor:", err);
   process.exit(1);
 });
