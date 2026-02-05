@@ -13,7 +13,7 @@ const server = new McpServer({
 
 server.tool(
   "getUserById",
-  "Search for a user in the Express API",
+  "Busca um usuário pelo ID",
   {
     id: z.number(),
   },
@@ -36,7 +36,7 @@ server.tool(
 
 server.tool(
   "searchCars",
-  "Search for cars by brand, model, year or maximum price",
+  "Pesquisa carros por marca, modelo, ano ou preço máximo",
   {
     brand: z.string().optional(),
     model: z.string().optional(),
