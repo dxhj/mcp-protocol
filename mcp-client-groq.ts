@@ -1,0 +1,99 @@
+// client-groq.ts - Example using Groq (free tier, fast)
+import "dotenv/config";
+import { Client } from "@modelcontextprotocol/sdk/client";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import OpenAI from "openai";
+import { isMcpToolResult } from "./types";
+
+const client = new Client({
+  name: "users-mcp-client",
+  version: "1.0.0",
+});
+const transport = new StdioClientTransport({
+  command: "node",
+  args: ["dist/mcp-server.js"],
+});
+
+client.connect(transport).then(async () => {
+  console.log("Client connected successfully");
+  const mcpTools = await client.listTools();
+  console.log("MCP Tools:", JSON.stringify(mcpTools, null, 2));
+  
+  // Convert MCP tools to OpenAI format
+  const openaiTools = mcpTools.tools.map((tool) => ({
+    type: "function" as const,
+    function: {
+      name: tool.name,
+      description: tool.description || "",
+      parameters: tool.inputSchema,
+    },
+  }));
+  
+  // Groq - Free tier, very fast inference
+  // Sign up at https://console.groq.com to get API key
+  const apiKey: string | undefined = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    console.error("GROQ_API_KEY environment variable is required");
+    console.error("Create a .env file with GROQ_API_KEY=your-key-here");
+    console.error("Get your free API key at: https://console.groq.com");
+    process.exit(1);
+  }
+  
+  const openai = new OpenAI({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey: apiKey,
+  });
+  
+  // Example: Search for cars and get user by id
+  const userMessage = "Encontre carros da marca Toyota com preço máximo de 150000 e também busque o usuário com id 2";
+  
+  const completion = await openai.chat.completions.create({
+    model: "Llama-3.3-70b-Versatile", // or "mixtral-8x7b-32768", "gemma-7b-it"
+    messages: [{ role: "user", content: userMessage }],
+    tools: openaiTools,
+    temperature: 0.7,
+  });
+
+  console.log("User message:", userMessage);
+  console.log("Tool calls:", JSON.stringify(completion.choices[0].message.tool_calls, null, 2));
+  
+  const message = completion.choices[0].message;
+  const toolCalls = message.tool_calls || [];
+  
+  // Handle multiple tool calls if needed
+  if (toolCalls.length > 0) {
+    for (const toolCall of toolCalls) {
+      if (toolCall.type === "function") {
+        console.log(`\nExecutando tool: ${toolCall.function.name}`);
+        console.log(`Argumentos: ${toolCall.function.arguments}`);
+        
+        const toolArguments = JSON.parse(toolCall.function.arguments || "{}") as Record<string, unknown>;
+        const result = await client.callTool({
+          name: toolCall.function.name,
+          arguments: toolArguments,
+        });
+        
+        console.log(`\nResultado da tool ${toolCall.function.name}:`);
+        
+        if (isMcpToolResult(result)) {
+          try {
+            const parsedContent = JSON.parse(result.content[0].text);
+            console.log(parsedContent);
+          } catch (parseError) {
+            // If parsing fails, just show the text as-is
+            console.log(result.content[0].text);
+          }
+        } else {
+          console.log(JSON.stringify(result, null, 2));
+        }
+      }
+    }
+  } else {
+    console.log("Resposta do modelo:", message.content);
+  }
+  process.exit(0);
+}).catch((err: unknown) => {
+  console.error("Failed to connect or list tools:", err);
+  process.exit(1);
+});
+
