@@ -24,13 +24,13 @@ app.get("/users/:id", (req: Request, res: Response<User | ErrorResponse>) => {
     const id = Number(req.params.id);
     
     if (isNaN(id) || id <= 0) {
-        return res.status(400).json({ error: "Invalid user ID" });
+        return res.status(400).json({ error: "ID de usuário inválido" });
     }
     
     const user = users.find((u: User) => u.id === id);
 
     if (!user) {
-        return res.status(404).json({ error: "Not found" });
+        return res.status(404).json({ error: "Não encontrado" });
     }
     
     return res.json(user);
@@ -76,13 +76,13 @@ app.get("/cars", (req: Request, res: Response<CarsResponse | ErrorResponse>) => 
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({
-                error: 'Invalid query parameters',
+                error: 'Parâmetros de consulta inválidos',
                 details: error.issues,
             });
         }
         
         console.error("Erro no endpoint /cars:", error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

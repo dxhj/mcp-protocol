@@ -17,7 +17,7 @@ server.tool(
   async ({ id }: { id: number }): Promise<{ content: Array<{ type: "text"; text: string }> }> => {
     const res = await fetch(`http://localhost:3000/users/${id}`);
     if (!res.ok) {
-      throw new Error(`Failed to fetch user: ${res.status} ${res.statusText}`);
+      throw new Error(`Falha ao buscar usuário: ${res.status} ${res.statusText}`);
     }
     const user = (await res.json()) as User;
     return {
@@ -64,8 +64,8 @@ server.tool(
     try {
       const res = await fetch(url);
       if (!res.ok) {
-        const errorText = await res.text().catch(() => "Unknown error");
-        throw new Error(`Failed to search cars: ${res.status} ${res.statusText}. ${errorText}`);
+        const errorText = await res.text().catch(() => "Erro desconhecido");
+        throw new Error(`Falha ao buscar carros: ${res.status} ${res.statusText}. ${errorText}`);
       }
       const data = (await res.json()) as CarsResponse;
       return {
@@ -80,11 +80,11 @@ server.tool(
       if (error instanceof Error) {
         // Check if it's a connection error
         if (error.message.includes("fetch failed") || error.message.includes("ECONNREFUSED")) {
-          throw new Error("API server is not running. Please start it with: npm run dev:api");
+          throw new Error("Servidor API não está rodando. Por favor, inicie com: npm run dev:api");
         }
         throw error;
       }
-      throw new Error("Unknown error occurred while searching cars");
+      throw new Error("Erro desconhecido ao buscar carros");
     }
   }
 );
