@@ -76,7 +76,7 @@ client.connect(transport).then(async () => {
             console.log(parsedContent);
           } catch (parseError) {
             // If parsing fails, just show the text as-is
-            console.log(result.content[0].text);
+            console.error(result.content[0].text);
           }
         } else {
           console.log(JSON.stringify(result, null, 2));
