@@ -1,4 +1,5 @@
 // api.ts
+import "dotenv/config";
 import express, { Request, Response } from "express";
 import { z } from "zod";
 import { User, Car, CarsResponse, ErrorResponse } from "./types";
@@ -86,6 +87,8 @@ app.get("/cars", (req: Request, res: Response<CarsResponse | ErrorResponse>) => 
     }
 });
 
-app.listen(3000, () => {
-    console.log("API Express rodando em http://localhost:3000");
+const PORT = Number(process.env.API_PORT) || 3000;
+
+app.listen(PORT, () => {
+    console.log(`API Express rodando em http://localhost:${PORT}`);
 });

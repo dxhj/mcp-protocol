@@ -1,7 +1,10 @@
+import "dotenv/config";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { User, CarsResponse } from "./types";
+
+const API_URL = process.env.API_URL || "http://localhost:3000";
 
 const server = new McpServer({
   name: "users-mcp",
@@ -15,7 +18,7 @@ server.tool(
     id: z.number(),
   },
   async ({ id }: { id: number }): Promise<{ content: Array<{ type: "text"; text: string }> }> => {
-    const res = await fetch(`http://localhost:3000/users/${id}`);
+    const res = await fetch(`${API_URL}/users/${id}`);
     if (!res.ok) {
       throw new Error(`Falha ao buscar usuário: ${res.status} ${res.statusText}`);
     }
@@ -59,7 +62,7 @@ server.tool(
     if (maxPrice !== undefined) queryParams.append("maxPrice", maxPrice.toString());
     
     const queryString = queryParams.toString();
-    const url = `http://localhost:3000/cars${queryString ? `?${queryString}` : ""}`;
+    const url = `${API_URL}/cars${queryString ? `?${queryString}` : ""}`;
     
     try {
       const res = await fetch(url);
